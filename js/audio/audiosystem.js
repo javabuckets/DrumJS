@@ -40,12 +40,14 @@ class Sound {
 class GameSound extends Sound {
     constructor(path) {
         super(path);
+        this.type = "GameSound";
     }
 }
 
 class Music extends Sound {
     constructor(path) {
         super(path);
+        this.type = "Music"
         this.withVolumeLevel(.7);
     }
 }

@@ -27,8 +27,11 @@ function update() {
 }
 
 function render() {
+    // Rendering the drum texture
     context.clearRect(0, 0, screen.width, screen.height);
     context.drawImage(imgDrum.img, drum.x, drum.y, drum.w, drum.h);
+    // Using the renderer.js drawImage function
+    drawImage(context, imgTest, 5, 5, 100, 150);
 }
 
 function processInput(e) {
