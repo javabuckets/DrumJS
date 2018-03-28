@@ -10,6 +10,9 @@ canvas.addEventListener("keydown", processInput, false);
 // Game Objects
 let drum = {x: screen.width/2 - 50, y: screen.height/2 - 50, w: 100, h: 100};
 
+let imgDrum = new StaticSprite("./images/drum.png", context, 10, 300, 100, 100);
+let alienAnim = new AnimatedSprite("./images/BlueMonster.png", 4, 0.3, context, screen.width/2- 50, screen.height/2 - 50, 100, 100);
+
 // Function for requesting next frame
 let requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame ||window.msRequestAnimationFrame || function (callback) { window.setTimeout(callback, 1000/60); };
 
@@ -27,9 +30,11 @@ function update() {
 }
 
 function render() {
+
     // Rendering the drum texture
     context.clearRect(0, 0, screen.width, screen.height);
-    context.drawImage(imgDrum.img, drum.x, drum.y, drum.w, drum.h);
+    alienAnim.Draw();
+    imgDrum.Draw();
     // Using the renderer.js drawImage function
     drawImage(context, imgTest, 5, 5, 100, 150);
 }
