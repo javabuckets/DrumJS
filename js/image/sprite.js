@@ -1,8 +1,7 @@
 // Use AnimatedSprite and StaticSprite for all images in the game.
 class Sprite {
-    constructor(path, x, y, width, height) {
-        this.img = new Image();
-        this.img.src = path;
+    constructor(img, x, y, width, height) {
+        this.img = img;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -11,10 +10,11 @@ class Sprite {
 }
 
 class AnimatedSprite extends Sprite {
-    constructor(path, nrOfSprites, secondsPerImage, context, x, y, width, height) {
-        super(path, x, y, width, height);
+    constructor(img, nrOfSprites, secondsPerImage, x, y, width, height) {
+        super(img, x, y, width, height);
         this.srcWidth = this.img.width;
         this.srcHeight = this.img.height;
+        
         this.updatesPerImage = Math.floor(60.0 * secondsPerImage); // 60 fps hardcoded for now.
         this.updateCounter = 0;
         this.nrOfSprites = nrOfSprites;
@@ -26,7 +26,7 @@ class AnimatedSprite extends Sprite {
         this.spritesDrawn = 1;
     }
     
-    Draw () {
+    Draw (context) {
         if (this.updateCounter >= this.updatesPerImage) {
             this.updateCounter = 0;
             this.spritesDrawn++;
@@ -38,17 +38,17 @@ class AnimatedSprite extends Sprite {
         }
 
         this.updateCounter++;
-        context.drawImage(this.img, this.srcX, this.srcY, this.xInterval, this.srcHeight, this.x, this.y, this.width, this.height)
+        context.drawImage(this.img, this.srcX, this.srcY, this.xInterval, this.srcHeight, this.x, this.y, this.width, this.height);
     }
 
 }
 
 class StaticSprite extends Sprite {
-    constructor(path, context, x, y, width, height) {
-        super(path, x, y, width, height);
+    constructor(img, x, y, width, height) {
+        super(img, x, y, width, height);
     }
 
-    Draw () {
+    Draw (context) {
         context.drawImage(this.img, this.x, this.y, this.width, this.height);
     }
 }
