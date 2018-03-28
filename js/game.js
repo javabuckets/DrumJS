@@ -15,7 +15,8 @@ let alienAnim;
 
 function init() {
     imgDrum = new StaticSprite(images[0], 10, 300, 100, 100);
-    alienAnim = new AnimatedSprite(images[1], 4, 0.3, screen.width/2- 50, screen.height/2 - 50, 100, 100);
+    alienAnim = new AnimatedSprite(images[1], 4, 0.3, DrawState.INDEF, screen.width/2- 50, screen.height/2 - 50, 100, 100);
+    alienAnimRight = new AnimatedSprite(images[1], 4, 0.3, DrawState.ONCE, screen.width - 150, screen.height/2 - 50, 100, 100);
 
     requestAnimationFrame(update);
 }
@@ -32,12 +33,14 @@ function update() {
 function render() {
     context.clearRect(0, 0, screen.width, screen.height);
     alienAnim.Draw(context);
+    alienAnimRight.Draw(context);
     imgDrum.Draw(context);
 }
 
 function processInput(e) {
     switch (e.keyCode) {
         case 80: { // P Button for "play"
+            alienAnimRight.DrawOnce();
             was.play();
             break;
         }
