@@ -8,7 +8,7 @@ let screen = {width: canvas.clientWidth, height: canvas.clientHeight};
 canvas.addEventListener("keydown", processInput, false);
 
 // Function for requesting next frame
-let requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame ||window.msRequestAnimationFrame || function (callback) { window.setTimeout(callback, 1000/60); };
+let requestAnimationFrame = function(update) { window.setTimeout(update, 1000/60); };
 
 let imgDrum;
 let alienAnim;
