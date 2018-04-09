@@ -1,6 +1,13 @@
 # DrumJS
 Drumming game made with love
 
+# Usecases:
+- Player is greeted with a two drumkits, one on the left and one on the right. 
+Music plays in the background, and a spotlight shines on the player who's turn it is.
+Pressing keys will animate the specific drum and play the corresponding sound.
+
+
+
 Mario: (below) (down there) 
 
 ──────────────███████──███████
