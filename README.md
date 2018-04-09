@@ -2,9 +2,10 @@
 Drumming game made with love
 
 # Usecases:
-- Player is greeted with two drumkits, one on the left and one on the right. 
-Music plays in the background, and a spotlight shines on the player who's turn it is.
-Pressing keys will animate the specific drum and play the corresponding sound.
+- __Player__ is greeted with two __drumkits__, the left for the user and the right for the "partner". 
+__Music__ plays in the background, and a __spotlight__ shines on the player who's __turn__ it is.
+Pressing keys will animate the specific __drum__ and play the corresponding __sound__.
+Player turns will change according to the __songs__ predefined intervals. 
 
 
 
