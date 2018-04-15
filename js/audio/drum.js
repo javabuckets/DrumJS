@@ -55,3 +55,10 @@ class Snare extends Drum {
     }
 }
 
+class Crash extends Drum {
+    constructor() {
+        super(DS_Crash);
+    }
+}
+
+

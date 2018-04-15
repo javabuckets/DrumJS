@@ -2,6 +2,7 @@
 
 // Game Sounds
 let GS_was = "./sounds/was.mp3";
+let M_nana = "./sounds/nana_background.ogg";
 let DS_OpenHiHat = "./sounds/drumkit/OpenHiHat.mp3";
 let DS_KickDrum = "./sounds/drumkit/KickDrum.mp3";
 let DS_Crash = "./sounds/drumkit/Crash.mp3";
