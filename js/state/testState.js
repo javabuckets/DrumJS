@@ -1,4 +1,4 @@
-// Rythm game - Press 'u' every second to gain points and keep the counter up.
+// Rhythm game - Press 'u' every second to gain points and keep the counter up.
 class TestState {
     constructor() {
         // Sprites
@@ -9,25 +9,84 @@ class TestState {
         // Drumkit
         this.drumkit = new Drumkit();
 
-        this.timer = 0;
-        this.timeHit = 0;
-        this.points = 10;
+        this.meter = 0;
+        this.turn = Turn.COMPUTER;
+        this.hitCounter = 0;
+
+        // Hit Logic
+        this.LastHitNode;
     }
 
     UpdateGameLogic() {
-        if (gameTimer % 60 == 0) {
-            this.points -= 0.95;
-            this.drumkit.kickDrum.playLight();
+
+        if (this.turn == Turn.COMPUTER) {
+            if (gameTimer % 60 == 0 && this.hitCounter < 4) {
+                this.drumkit.kickDrum.playLight();
+                this.hitCounter++;
+            }
+
+            else if (this.hitCounter == 4 && ((gameTimer / 60) - Math.round(gameTimer / 60)) < 0) {
+                this.hitCounter = 0;
+                this.turn = Turn.PLAYER1;
+                console.log("Hello");
+            }
         }
+
+        else if (this.turn == Turn.PLAYER1) {
+            if (gameTimer % 60 == 0 && this.hitCounter < 4) {
+                this.drumkit.kickDrum.playLight();
+                this.hitCounter++;
+            }
+
+            else if (this.hitCounter == 4 && ((gameTimer / 60) - Math.round(gameTimer / 60)) < 0) {
+                this.hitCounter = 0;
+                this.turn = Turn.PLAYER2;
+            }
+        }
+
+        else if (this.turn == Turn.PLAYER2) {
+            if (gameTimer % 60 == 0 && this.hitCounter < 4) {
+                this.drumkit.kickDrum.playLight();
+                this.hitCounter++;
+            }
+
+            else if (this.hitCounter == 4 && ((gameTimer / 60) - Math.round(gameTimer / 60)) < 0) {
+                this.hitCounter = 0;
+                this.turn = Turn.COMPUTER;
+            }
+        }
+
     }
 
+    HitDrum(player) {
+        if (this.turn == Turn.PLAYER1 && player == Turn.PLAYER1) {
+            if (Math.round(gameTimer / 60) == this.LastHitNode) {
+                this.meter -= 1;
+            }
+            else {
+                this.LastHitNode = Math.round(gameTimer / 60);
+                this.meter += 1 - (Math.abs(this.LastHitNode - gameTimer / 60));
+            }
+        }
+        else if (this.turn == Turn.PLAYER2 && player == Turn.PLAYER2) {
+            if (Math.round(gameTimer / 60) == this.LastHitNode) {
+                this.meter -= 0.2;
+            }
+            else {
+                this.LastHitNode = Math.round(gameTimer / 60);
+                this.meter -= 1 - (Math.abs(this.LastHitNode - gameTimer / 60));
+            }
+        }
+    }
 
     RenderState(context) {
         this.alienAnim.Draw(context);
         this.alienAnimRight.Draw(context);
         this.imgDrum.Draw(context);
         context.font = "30px Arial";
-        context.fillText(this.points.toFixed(2), 50, 50, 50)
+        context.fillText(this.meter.toFixed(2), 50, 50, 50);
+        context.fillText((gameTimer/60).toFixed(2), 300, 50, 50);
+        context.fillText(this.turn, 600, 50, 50);
     }
 
     _processDrumKey(e) {
@@ -49,7 +108,7 @@ class TestState {
             }
             case 85: { // u
                 this.drumkit.snare.playLight();
-                this.points += 1 - (Math.abs(Math.round(gameTimer / 60) - gameTimer / 60));
+                this.HitDrum(Turn.PLAYER1);
                 return;
             }
             case 73: { // i
@@ -68,10 +127,14 @@ class TestState {
                 this.drumkit.snare.playLight();
                 return;
             }
+            case 77: { // m
+                this.drumkit.snare.playLight();
+                this.HitDrum(Turn.PLAYER2);
+                return;
+            }
         }
 
     }
-
 
     ProcessKey(e) {
         switch (e.keyCode) {
