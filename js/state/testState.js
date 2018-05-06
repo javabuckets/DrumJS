@@ -2,134 +2,157 @@
 class TestState {
     constructor() {
         // Sprites
-        this.imgDrum = new StaticSprite(images[0], 10, 300, 100, 100);
-        this.alienAnim = new AnimatedSprite(images[1], 4, 0.3, DrawState.INDEF, screen.width / 2 - 50, screen.height / 2 - 50, 100, 100);
-        this.alienAnimRight = new AnimatedSprite(images[1], 4, 0.3, DrawState.ONCE, screen.width - 150, screen.height / 2 - 50, 100, 100);
+        this._imgDrum = new StaticSprite(images[0], 10, 300, 100, 100);
+        this._alienAnim = new AnimatedSprite(images[1], 4, 0.3, DrawState.INDEF, screen.width / 2 - 50, screen.height / 2 - 50, 100, 100);
+        this._alienAnimRight = new AnimatedSprite(images[1], 4, 0.3, DrawState.ONCE, screen.width - 150, screen.height / 2 - 50, 100, 100);
 
         // Drumkit
-        this.drumkit = new Drumkit();
+        this._drumkit = new Drumkit();
 
-        this.meter = 0;
-        this.turn = Turn.COMPUTER;
-        this.hitCounter = 0;
+        this._meter = 0;
+        this._turn = Turn.COMPUTER;
+        this._skipTurn = false;
+
+        this._hitCounter = 0;
 
         // Hit Logic
-        this.LastHitNode;
+        this._lastHitNode;
+
+        // Winner logic
+        this._winner = null;
+        this._winningPoint = 4;
     }
 
     UpdateGameLogic() {
+        if (this._winner == null) {
+            // Turns
+            if (this._turn == Turn.COMPUTER) {
+                if (this._skipTurn == false) {
+                    this._takeTurn(Turn.PLAYER1);
+                }
+                else {
+                    this._takeTurn(Turn.PLAYER2);
+                }
 
-        if (this.turn == Turn.COMPUTER) {
-            if (gameTimer % 60 == 0 && this.hitCounter < 4) {
-                this.drumkit.kickDrum.playLight();
-                this.hitCounter++;
+            }
+            else if (this._turn == Turn.PLAYER1) {
+                this._takeTurn(Turn.COMPUTER);
+                this._skipTurn = true;
+            }
+            else if (this._turn == Turn.PLAYER2) {
+                this._takeTurn(Turn.COMPUTER);
+                this._skipTurn = false;
             }
 
-            else if (this.hitCounter == 4 && ((gameTimer / 60) - Math.round(gameTimer / 60)) < 0) {
-                this.hitCounter = 0;
-                this.turn = Turn.PLAYER1;
-                console.log("Hello");
-            }
+            // Meter checking
+            this._checkMeter(this._winningPoint)
         }
-
-        else if (this.turn == Turn.PLAYER1) {
-            if (gameTimer % 60 == 0 && this.hitCounter < 4) {
-                this.drumkit.kickDrum.playLight();
-                this.hitCounter++;
-            }
-
-            else if (this.hitCounter == 4 && ((gameTimer / 60) - Math.round(gameTimer / 60)) < 0) {
-                this.hitCounter = 0;
-                this.turn = Turn.PLAYER2;
-            }
-        }
-
-        else if (this.turn == Turn.PLAYER2) {
-            if (gameTimer % 60 == 0 && this.hitCounter < 4) {
-                this.drumkit.kickDrum.playLight();
-                this.hitCounter++;
-            }
-
-            else if (this.hitCounter == 4 && ((gameTimer / 60) - Math.round(gameTimer / 60)) < 0) {
-                this.hitCounter = 0;
-                this.turn = Turn.COMPUTER;
-            }
-        }
-
     }
 
-    HitDrum(player) {
-        if (this.turn == Turn.PLAYER1 && player == Turn.PLAYER1) {
-            if (Math.round(gameTimer / 60) == this.LastHitNode) {
-                this.meter -= 1;
-            }
-            else {
-                this.LastHitNode = Math.round(gameTimer / 60);
-                this.meter += 1 - (Math.abs(this.LastHitNode - gameTimer / 60));
-            }
+    _checkMeter(winningPoint) {
+        if (this._meter > winningPoint) {
+            this._winner = "Player 1";
         }
-        else if (this.turn == Turn.PLAYER2 && player == Turn.PLAYER2) {
-            if (Math.round(gameTimer / 60) == this.LastHitNode) {
-                this.meter -= 0.2;
+        else if (this._meter < -winningPoint) {
+            this._winner = "Player 2";
+        }
+    }
+
+
+    _takeTurn(nextTurn) {
+        if (gameTimer % 60 == 0 && this._hitCounter < 4) {
+            if (this._turn == Turn.COMPUTER) {
+                this._drumkit.kickDrum.playLight();
             }
-            else {
-                this.LastHitNode = Math.round(gameTimer / 60);
-                this.meter -= 1 - (Math.abs(this.LastHitNode - gameTimer / 60));
-            }
+            this._hitCounter++;
+        }
+
+        else if (this._hitCounter == 4 && ((gameTimer / 60) - Math.round(gameTimer / 60)) < 0) {
+            this._hitCounter = 0;
+            this._turn = nextTurn;
+        }
+    }
+
+    _hitAccuracy() {
+        if (Math.round(gameTimer / 60) == this._lastHitNode) {
+            return 0;
+        }
+        else {
+            this._lastHitNode = Math.round(gameTimer / 60);
+            return 1 - (Math.abs(this._lastHitNode - gameTimer / 60));
+        }
+    }
+
+    _hitDrum(player) {
+        if (this._turn == Turn.PLAYER1 && player == Turn.PLAYER1) {
+            let accuracy = this._hitAccuracy();
+            this._meter += accuracy == 0 ? -1 : accuracy;
+        }
+
+        else if (this._turn == Turn.PLAYER2 && player == Turn.PLAYER2) {
+            let accuracy = this._hitAccuracy();
+            this._meter -= accuracy == 0 ? -1 : accuracy;
         }
     }
 
     RenderState(context) {
-        this.alienAnim.Draw(context);
-        this.alienAnimRight.Draw(context);
-        this.imgDrum.Draw(context);
+        context.rect(250, 350, 300, 100);
+
+        context.fillRect(390 - (this._meter / this._winningPoint) * 140, 350, 20, 100);
+
+
         context.font = "30px Arial";
-        context.fillText(this.meter.toFixed(2), 50, 50, 50);
+        context.fillText(this._meter.toFixed(2), 50, 50, 50);
         context.fillText((gameTimer/60).toFixed(2), 300, 50, 50);
-        context.fillText(this.turn, 600, 50, 50);
+        context.fillText(this._turn, 550, 50, 50);
+
+        if (this._winner != null) {
+            context.fillText(this._winner + " is the winner!", 350, 200, 200);
+        }
+
     }
 
     _processDrumKey(e) {
         switch (e.keyCode) {
             case 65: { // a
-                this.drumkit.kickDrum.playLight();
+                this._drumkit.kickDrum.playLight();
                 return;
             }
             case 83: { // s
-                this.drumkit.hiHat.playLight();
+                this._drumkit.hiHat.playLight();
                 return;
             }
             case 68: { // d
-                this.drumkit.crash.playLight();
+                this._drumkit.crash.playLight();
                 return;
             }
             case 70: { // f
                 return;
             }
             case 85: { // u
-                this.drumkit.snare.playLight();
-                this.HitDrum(Turn.PLAYER1);
+                this._drumkit.snare.playLight();
+                this._hitDrum(Turn.PLAYER1);
                 return;
             }
             case 73: { // i
-                this.drumkit.floorTom.playLight();
+                this._drumkit.floorTom.playLight();
                 return;
             }
             case 79: { // o
-                this.drumkit.midTom.playLight();
+                this._drumkit.midTom.playLight();
                 return;
             }
             case 80: { // p
-                this.drumkit.hiTom.playLight();
+                this._drumkit.hiTom.playLight();
                 return;
             }
             case 72: { // h
-                this.drumkit.snare.playLight();
+                this._drumkit.snare.playLight();
                 return;
             }
             case 77: { // m
-                this.drumkit.snare.playLight();
-                this.HitDrum(Turn.PLAYER2);
+                this._drumkit.snare.playLight();
+                this._hitDrum(Turn.PLAYER2);
                 return;
             }
         }
@@ -139,7 +162,7 @@ class TestState {
     ProcessKey(e) {
         switch (e.keyCode) {
             case 74: { // j Button for "play"
-                this.alienAnimRight.DrawOnce();
+                this._alienAnimRight.DrawOnce();
                 was.play();
                 return;
             }

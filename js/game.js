@@ -34,6 +34,7 @@ function update() {
     // Render call
     context.clearRect(0, 0, screen.width, screen.height);
     stateMachine.ActiveState.RenderState(context);
+    context.stroke();
 
     requestAnimationFrame(update);
 }
