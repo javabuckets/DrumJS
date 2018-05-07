@@ -10,6 +10,10 @@ function removeKeybinding(input) {
     }
 }
 
+function getKeybinding(input) {
+    return keybindings[input];
+}
+
 function replaceKeybinding(inputA, inputB) {
     if (inputA in keybindings && inputB in keybindings) {
         let input = keybindings[inputA];

@@ -39,6 +39,7 @@ function render() {
 
 function processInput(e) {
     console.log(keyboardMap[e.keyCode]);
+    console.log(getKeybinding(KEY_A))
     
     switch (e.keyCode) {
         case 80: { // P Button for "play"
