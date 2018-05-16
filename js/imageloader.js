@@ -1,5 +1,6 @@
 // Use images[] array to refer to images, as it ensures the image is loaded.
 // Add images here.
+
 var paths = [
     "./images/drum.png",
     "./images/BlueMonster.png"
@@ -19,6 +20,7 @@ paths.forEach(element => {
 
 function checkCounter() {
     if (counter == images.length) {
-        init();
+        let game = new Game();
+        game.init();
     }
 }

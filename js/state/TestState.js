@@ -60,26 +60,26 @@ class TestState {
 
 
     _takeTurn(nextTurn) {
-        if (gameTimer % 60 == 0 && this._hitCounter < 4) {
+        if (s_GameTime % 60 == 0 && this._hitCounter < 4) {
             if (this._turn == Turn.COMPUTER) {
                 this._drumkit.kickDrum.playLight();
             }
             this._hitCounter++;
         }
 
-        else if (this._hitCounter == 4 && ((gameTimer / 60) - Math.round(gameTimer / 60)) < 0) {
+        else if (this._hitCounter == 4 && ((s_GameTime / 60) - Math.round(s_GameTime / 60)) < 0) {
             this._hitCounter = 0;
             this._turn = nextTurn;
         }
     }
 
     _hitAccuracy() {
-        if (Math.round(gameTimer / 60) == this._lastHitNode) {
+        if (Math.round(s_GameTime / 60) == this._lastHitNode) {
             return 0;
         }
         else {
-            this._lastHitNode = Math.round(gameTimer / 60);
-            return 1 - (Math.abs(this._lastHitNode - gameTimer / 60));
+            this._lastHitNode = Math.round(s_GameTime / 60);
+            return 1 - (Math.abs(this._lastHitNode - s_GameTime / 60));
         }
     }
 
@@ -103,7 +103,7 @@ class TestState {
 
         context.font = "30px Arial";
         context.fillText(this._meter.toFixed(2), 50, 50, 50);
-        context.fillText((gameTimer/60).toFixed(2), 300, 50, 50);
+        context.fillText((s_GameTime/60).toFixed(2), 300, 50, 50);
         context.fillText(this._turn, 550, 50, 50);
 
         if (this._winner != null) {

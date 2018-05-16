@@ -1,45 +1,52 @@
-let canvas = document.querySelector("#canvas");
-let context = canvas.getContext("2d");
+class Game {
+    constructor() {
+        this.instance = this;
+        this.canvas = document.querySelector("#canvas");
+        this.context = canvas.getContext("2d");
 
-// Screen width/height reference
-let screen = {width: canvas.clientWidth, height: canvas.clientHeight};
+        // Screen width/height reference
+        this.screen = {width: this.canvas.clientWidth, height: this.canvas.clientHeight};
 
-// Event Handling
-canvas.addEventListener("keydown", processInput, false);
+        // timer.js
+        this.interval = 1000 / 60;
+        this.startTime = Date.now();
 
-// timer.js
-let interval = 1000/60;
-let startTime = Date.now();
-let gameTimer = 0;
+        // StateMachine
+        this.stateMachine = new StateMachine();
+    }
 
-// StateMachine
-let stateMachine;
+    init() {
+        // Event Handling
+        this.canvas.addEventListener("keydown", (e) => this.processInput(e), false);
 
-// Function for requesting next frame
-let requestAnimationFrame = function(update) { window.setTimeout(update, interval - (Date.now() - startTime)); };
+        // I am a fucking genius for fixing this,
+        // used https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout
+        this.requestAnimationFrame(() => this.update());
+    }
 
-function init() {
-    stateMachine = new StateMachine();
-    requestAnimationFrame(update);
-}
+    requestAnimationFrame(updateFunction) {
+        window.setTimeout(updateFunction, this.interval - (Date.now() - this.startTime));
+    }
 
-function update() {
-    // Timer update
-    startTime = Date.now();
-    gameTimer += 1; // Gametime since start of game in miliseconds
+    update() {
+        // Timer update
+        this.startTime = Date.now();
+        s_GameTime += 1; // Gametime since start of game in milliseconds
 
-    // Game Logic
-    stateMachine.ActiveState.UpdateGameLogic();
+        // Game Logic
+        this.stateMachine.ActiveState.UpdateGameLogic();
 
-    // Render call
-    context.clearRect(0, 0, screen.width, screen.height);
-    stateMachine.ActiveState.RenderState(context);
-    context.stroke();
+        // Render call
+        this.context.clearRect(0, 0, screen.width, screen.height);
+        this.stateMachine.ActiveState.RenderState(this.context);
+        this.context.stroke();
 
-    requestAnimationFrame(update);
-}
+        requestAnimationFrame(() => this.update());
+    }
 
-function processInput(e) {
-    stateMachine.ActiveState.ProcessKey(e);
+
+    processInput(e) {
+        this.stateMachine.ActiveState.ProcessKey(e);
+    }
 }
 
