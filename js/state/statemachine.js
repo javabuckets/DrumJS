@@ -1,5 +1,5 @@
 class StateMachine {
     constructor() {
-        this.ActiveState = new TestState();
+        this.ActiveState = new BeatGame();
     }
 }
